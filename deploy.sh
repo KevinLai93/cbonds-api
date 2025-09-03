@@ -141,3 +141,4 @@ echo "🌐 To update environment variables:"
 echo "   aws ssm put-parameter --name '/cbonds-api/dev/CBONDS_LOGIN' --value 'new_value' --type 'SecureString' --overwrite"
 echo "   aws ssm put-parameter --name '/cbonds-api/dev/CBONDS_PASSWORD' --value 'new_value' --type 'SecureString' --overwrite"
 echo "   serverless deploy --stage dev"
+

@@ -105,12 +105,12 @@ const API = {
   },
   
   async getEmissionDefault(isin) {
-    const endpoint = isin ? `/api/cbonds/get_emission_default?isin=${isin}` : '/api/cbonds/get_emission_default';
+    const endpoint = isin ? `/api/financial-data/get_emission_default?isin=${isin}` : '/api/financial-data/get_emission_default';
     return await apiCall(endpoint);
   },
   
   async getTradingsNew(isin, sortBy = 'date_desc') {
-    let endpoint = '/api/cbonds/get_tradings_new';
+    let endpoint = '/api/financial-data/get_tradings_new';
     const params = [];
     if (isin) params.push(`isin=${isin}`);
     if (sortBy) params.push(`sort_by=${sortBy}`);
@@ -119,17 +119,17 @@ const API = {
   },
   
   async getFlowNew(isin) {
-    const endpoint = isin ? `/api/cbonds/get_flow_new?isin=${isin}` : '/api/cbonds/get_flow_new';
+    const endpoint = isin ? `/api/financial-data/get_flow_new?isin=${isin}` : '/api/financial-data/get_flow_new';
     return await apiCall(endpoint);
   },
   
   async getOffert(isin) {
-    const endpoint = isin ? `/api/cbonds/get_offert?isin=${isin}` : '/api/cbonds/get_offert';
+    const endpoint = isin ? `/api/financial-data/get_offert?isin=${isin}` : '/api/financial-data/get_offert';
     return await apiCall(endpoint);
   },
   
   async getEmissionGuarantors(isin) {
-    const endpoint = isin ? `/api/cbonds/get_emission_guarantors?isin=${isin}` : '/api/cbonds/get_emission_guarantors';
+    const endpoint = isin ? `/api/financial-data/get_emission_guarantors?isin=${isin}` : '/api/financial-data/get_emission_guarantors';
     return await apiCall(endpoint);
   },
   

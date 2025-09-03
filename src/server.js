@@ -24,11 +24,11 @@ app.use(globalAuth);
 const PORT = 3000;
 
 // Credentials from environment variables
-const CBONDS_LOGIN = process.env.CBONDS_LOGIN;
-const CBONDS_PASSWORD = process.env.CBONDS_PASSWORD;
+const FINANCIAL_DATA_LOGIN = process.env.FINANCIAL_DATA_LOGIN;
+const FINANCIAL_DATA_PASSWORD = process.env.FINANCIAL_DATA_PASSWORD;
 
-if (!CBONDS_LOGIN || !CBONDS_PASSWORD) {
-  console.warn('CBONDS credentials are not set. Set CBONDS_LOGIN and CBONDS_PASSWORD in .env');
+if (!FINANCIAL_DATA_LOGIN || !FINANCIAL_DATA_PASSWORD) {
+  console.warn('Financial Data API credentials are not set. Set FINANCIAL_DATA_LOGIN and FINANCIAL_DATA_PASSWORD in .env');
 }
 
 // Explicit CORS headers for all routes (in addition to cors())
@@ -119,15 +119,15 @@ app.get('/api/get_emissions', async (req, res) => {
 
   try {
     console.log(`🔍 查询ISIN: ${isin}, 语言: ${lang}`);
-    console.log(`🔐 使用CBonds账号: ${CBONDS_LOGIN}`);
+    console.log(`🔐 使用Financial Data账号: ${FINANCIAL_DATA_LOGIN}`);
     
     const requestBody = {
-      auth: { login: CBONDS_LOGIN, password: CBONDS_PASSWORD },
+      auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: [{ field: 'isin_code', operator: 'in', value: isin }],
       quantity: { limit: 1, offset: 0 }
     };
     
-    console.log(`📤 发送请求到CBonds API:`, JSON.stringify(requestBody, null, 2));
+    console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
     
     // 語言參數直接加在URL路徑上
     const apiUrl = `https://ws.cbonds.info/services/json/get_emissions/?lang=${lang}`;
@@ -144,17 +144,17 @@ app.get('/api/get_emissions', async (req, res) => {
       body: JSON.stringify(requestBody)
     });
 
-    console.log(`📥 CBonds API响应状态: ${response.status}`);
-    console.log(`📥 CBonds API响应头:`, Object.fromEntries(response.headers.entries()));
+    console.log(`📥 Financial Data API响应状态: ${response.status}`);
+    console.log(`📥 Financial Data API响应头:`, Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ CBonds API错误响应: ${errorText}`);
-      throw new Error(`CBonds API responded with status: ${response.status} - ${errorText}`);
+      console.error(`❌ Financial Data API错误响应: ${errorText}`);
+      throw new Error(`Financial Data API responded with status: ${response.status} - ${errorText}`);
     }
 
     const responseText = await response.text();
-    console.log(`📥 CBonds API原始响应: ${responseText}`);
+    console.log(`📥 Financial Data API原始响应: ${responseText}`);
     
     let data;
     try {
@@ -162,10 +162,10 @@ app.get('/api/get_emissions', async (req, res) => {
     } catch (parseError) {
       console.error(`❌ JSON解析错误: ${parseError.message}`);
       console.error(`❌ 原始响应内容: ${responseText}`);
-      throw new Error(`Invalid JSON response from CBonds API: ${responseText}`);
+      throw new Error(`Invalid JSON response from Financial Data API: ${responseText}`);
     }
 
-    console.log(`✅ 成功解析CBonds API响应:`, data);
+    console.log(`✅ 成功解析Financial Data API响应:`, data);
     
     // 如果請求中文，翻譯回應資料
     if (lang === 'zh' || lang === 'cht' || lang === 'zh-cn' || lang === 'zh-tw') {
@@ -190,9 +190,9 @@ app.get('/api/get_emissions', async (req, res) => {
     res.json(data);
     
   } catch (err) {
-    console.error(`❌ CBonds API调用错误:`, err);
+    console.error(`❌ Financial Data API调用错误:`, err);
     res.status(500).json({ 
-      error: 'Cbonds API error', 
+      error: 'Financial Data API error', 
       detail: err.message,
       isin: isin,
       timestamp: new Date().toISOString()
@@ -221,12 +221,12 @@ app.get('/api/get_emitents', async (req, res) => {
     }
     
     const requestBody = {
-      auth: { login: CBONDS_LOGIN, password: CBONDS_PASSWORD },
+      auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: filters,
       quantity: { limit: 1, offset: 0 }
     };
     
-    console.log(`📤 发送请求到CBonds API:`, JSON.stringify(requestBody, null, 2));
+    console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
     
     const apiUrl = `https://ws.cbonds.info/services/json/get_emitents/?lang=${lang}`;
     console.log(`📤 API URL: ${apiUrl}`);
@@ -241,26 +241,26 @@ app.get('/api/get_emitents', async (req, res) => {
       body: JSON.stringify(requestBody)
     });
 
-    console.log(`📥 CBonds API响应状态: ${response.status}`);
+    console.log(`📥 Financial Data API响应状态: ${response.status}`);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ CBonds API错误响应: ${errorText}`);
-      throw new Error(`CBonds API responded with status: ${response.status} - ${errorText}`);
+      console.error(`❌ Financial Data API错误响应: ${errorText}`);
+      throw new Error(`Financial Data API responded with status: ${response.status} - ${errorText}`);
     }
 
     const responseText = await response.text();
-    console.log(`📥 CBonds API原始响应长度: ${responseText.length} 字符`);
+    console.log(`📥 Financial Data API原始响应长度: ${responseText.length} 字符`);
     
     let data;
     try {
       data = JSON.parse(responseText);
     } catch (parseError) {
       console.error(`❌ JSON解析错误: ${parseError.message}`);
-      throw new Error(`Invalid JSON response from CBonds API: ${responseText}`);
+      throw new Error(`Invalid JSON response from Financial Data API: ${responseText}`);
     }
 
-    console.log(`✅ 成功解析CBonds API响应`);
+    console.log(`✅ 成功解析Financial Data API响应`);
     
     // 如果請求中文，翻譯回應資料
     if (lang === 'zh' || lang === 'cht' || lang === 'zh-cn' || lang === 'zh-tw') {
@@ -285,9 +285,9 @@ app.get('/api/get_emitents', async (req, res) => {
     res.json(data);
     
   } catch (err) {
-    console.error(`❌ CBonds API调用错误:`, err);
+    console.error(`❌ Financial Data API调用错误:`, err);
     res.status(500).json({ 
-      error: 'Cbonds API error', 
+      error: 'Financial Data API error', 
       detail: err.message,
       emitent_id: emitentId,
       emitent_name: emitentName,
@@ -297,12 +297,12 @@ app.get('/api/get_emitents', async (req, res) => {
 });
 
 // 测试端点 - 直接使用成功的curl格式
-app.get('/api/test_cbonds', async (req, res) => {
+app.get('/api/test_financial_data', async (req, res) => {
   try {
-    console.log(`🧪 测试CBonds API连接...`);
+    console.log(`🧪 测试Financial Data API连接...`);
     
     const requestBody = {
-      auth: { login: CBONDS_LOGIN, password: CBONDS_PASSWORD },
+      auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: [{ field: 'isin_code', operator: 'in', value: 'US037833DY36' }],
       quantity: { limit: 1, offset: 0 }
     };
@@ -327,7 +327,7 @@ app.get('/api/test_cbonds', async (req, res) => {
     
     if (!response.ok) {
       return res.status(response.status).json({
-        error: 'CBonds API test failed',
+        error: 'Financial Data API test failed',
         status: response.status,
         response: responseText,
         headers: Object.fromEntries(response.headers.entries())
@@ -338,33 +338,33 @@ app.get('/api/test_cbonds', async (req, res) => {
       const data = JSON.parse(responseText);
       res.json({
         success: true,
-        message: 'CBonds API test successful',
+        message: 'Financial Data API test successful',
         data: data
       });
     } catch (parseError) {
       res.json({
         success: false,
-        message: 'CBonds API test successful but JSON parse failed',
+        message: 'Financial Data API test successful but JSON parse failed',
         response: responseText,
         parseError: parseError.message
       });
     }
     
   } catch (err) {
-    console.error(`❌ CBonds API测试错误:`, err);
+    console.error(`❌ Financial Data API测试错误:`, err);
     res.status(500).json({ 
-      error: 'CBonds API test error', 
+      error: 'Financial Data API test error', 
       detail: err.message,
       timestamp: new Date().toISOString()
     });
   }
 });
 
-// CBonds API - 获取发行商信息
-app.get('/api/cbonds/get_emission_default', async (req, res) => {
+// Financial Data API - 获取发行商信息
+app.get('/api/financial-data/get_emission_default', async (req, res) => {
   try {
     const lang = req.query.lang || 'eng';
-    console.log(`🔍 获取CBonds债券违约数据... 语言: ${lang}`);
+    console.log(`🔍 获取Financial Data债券违约数据... 语言: ${lang}`);
     
     // 支持ISIN查询参数
     const filters = req.body?.filters || [];
@@ -373,12 +373,12 @@ app.get('/api/cbonds/get_emission_default', async (req, res) => {
     }
     
     const requestBody = {
-      auth: { login: CBONDS_LOGIN, password: CBONDS_PASSWORD },
+      auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: filters,
       quantity: req.body?.quantity || { limit: 100, offset: 0 }
     };
     
-    console.log(`📤 发送请求到CBonds API:`, JSON.stringify(requestBody, null, 2));
+    console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
     
     const apiUrl = `https://ws.cbonds.info/services/json/get_emission_default/?lang=${lang}`;
     const response = await fetch(apiUrl, {
@@ -391,32 +391,32 @@ app.get('/api/cbonds/get_emission_default', async (req, res) => {
       body: JSON.stringify(requestBody)
     });
 
-    console.log(`📥 CBonds API响应状态: ${response.status}`);
+    console.log(`📥 Financial Data API响应状态: ${response.status}`);
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ CBonds API错误响应: ${errorText}`);
-      throw new Error(`CBonds API responded with status: ${response.status} - ${errorText}`);
+      console.error(`❌ Financial Data API错误响应: ${errorText}`);
+      throw new Error(`Financial Data API responded with status: ${response.status} - ${errorText}`);
     }
 
     const responseText = await response.text();
-    console.log(`📥 CBonds API原始响应长度: ${responseText.length} 字符`);
+    console.log(`📥 Financial Data API原始响应长度: ${responseText.length} 字符`);
     
     let data;
     try {
       data = JSON.parse(responseText);
-      console.log(`✅ 成功解析CBonds API响应`);
+      console.log(`✅ 成功解析Financial Data API响应`);
     } catch (parseError) {
       console.error(`❌ JSON解析错误: ${parseError.message}`);
-      throw new Error(`Invalid JSON response from CBonds API: ${responseText}`);
+      throw new Error(`Invalid JSON response from Financial Data API: ${responseText}`);
     }
 
     res.json(data);
     
   } catch (err) {
-    console.error(`❌ CBonds API调用错误:`, err);
+    console.error(`❌ Financial Data API调用错误:`, err);
     res.status(500).json({ 
-      error: 'Cbonds API error', 
+      error: 'Financial Data API error', 
       detail: err.message,
       endpoint: 'get_emission_default',
       timestamp: new Date().toISOString()
@@ -424,11 +424,11 @@ app.get('/api/cbonds/get_emission_default', async (req, res) => {
   }
 });
 
-// CBonds API - 获取公司信息
-app.get('/api/cbonds/get_emission_guarantors', async (req, res) => {
+// Financial Data API - 获取公司信息
+app.get('/api/financial-data/get_emission_guarantors', async (req, res) => {
   try {
     const lang = req.query.lang || 'eng';
-    console.log(`🔍 获取CBonds债券担保人数据... 语言: ${lang}`);
+    console.log(`🔍 获取Financial Data债券担保人数据... 语言: ${lang}`);
     
     // 支持ISIN查询参数
     const filters = req.body?.filters || [];
@@ -437,12 +437,12 @@ app.get('/api/cbonds/get_emission_guarantors', async (req, res) => {
     }
     
     const requestBody = {
-      auth: { login: CBONDS_LOGIN, password: CBONDS_PASSWORD },
+      auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: filters,
       quantity: req.body?.quantity || { limit: 100, offset: 0 }
     };
     
-    console.log(`📤 发送请求到CBonds API:`, JSON.stringify(requestBody, null, 2));
+    console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
     
     const apiUrl = `https://ws.cbonds.info/services/json/get_emission_guarantors/?lang=${lang}`;
     const response = await fetch(apiUrl, {
@@ -455,32 +455,32 @@ app.get('/api/cbonds/get_emission_guarantors', async (req, res) => {
       body: JSON.stringify(requestBody)
     });
 
-    console.log(`📥 CBonds API响应状态: ${response.status}`);
+    console.log(`📥 Financial Data API响应状态: ${response.status}`);
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ CBonds API错误响应: ${errorText}`);
-      throw new Error(`CBonds API responded with status: ${response.status} - ${errorText}`);
+      console.error(`❌ Financial Data API错误响应: ${errorText}`);
+      throw new Error(`Financial Data API responded with status: ${response.status} - ${errorText}`);
     }
 
     const responseText = await response.text();
-    console.log(`📥 CBonds API原始响应长度: ${responseText.length} 字符`);
+    console.log(`📥 Financial Data API原始响应长度: ${responseText.length} 字符`);
     
     let data;
     try {
       data = JSON.parse(responseText);
-      console.log(`✅ 成功解析CBonds API响应`);
+      console.log(`✅ 成功解析Financial Data API响应`);
     } catch (parseError) {
       console.error(`❌ JSON解析错误: ${parseError.message}`);
-      throw new Error(`Invalid JSON response from CBonds API: ${responseText}`);
+      throw new Error(`Invalid JSON response from Financial Data API: ${responseText}`);
     }
 
     res.json(data);
     
   } catch (err) {
-    console.error(`❌ CBonds API调用错误:`, err);
+    console.error(`❌ Financial Data API调用错误:`, err);
     res.status(500).json({ 
-      error: 'Cbonds API error', 
+      error: 'Financial Data API error', 
       detail: err.message,
       endpoint: 'get_emission_guarantors',
       timestamp: new Date().toISOString()
@@ -488,10 +488,10 @@ app.get('/api/cbonds/get_emission_guarantors', async (req, res) => {
   }
 });
 
-// CBonds API - 获取最新报价
-app.get('/api/cbonds/get_flow_new', async (req, res) => {
+// Financial Data API - 获取最新报价
+app.get('/api/financial-data/get_flow_new', async (req, res) => {
   try {
-    console.log(`🔍 获取CBonds债券付息计划...`);
+    console.log(`🔍 获取Financial Data债券付息计划...`);
     
     // 支持ISIN查询参数 - get_flow_new需要使用emission_id
     const filters = req.body?.filters || [];
@@ -506,7 +506,7 @@ app.get('/api/cbonds/get_flow_new', async (req, res) => {
             'Accept': '*/*'
           },
           body: JSON.stringify({
-            auth: { login: CBONDS_LOGIN, password: CBONDS_PASSWORD },
+            auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
             filters: [{ field: 'isin_code', operator: 'in', value: req.query.isin }],
             quantity: { limit: 1, offset: 0 }
           })
@@ -539,12 +539,12 @@ app.get('/api/cbonds/get_flow_new', async (req, res) => {
     }
     
     const requestBody = {
-      auth: { login: CBONDS_LOGIN, password: CBONDS_PASSWORD },
+      auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: filters,
       quantity: req.body?.quantity || { limit: 50, offset: 0 }  // 减少默认limit
     };
     
-    console.log(`📤 发送请求到CBonds API:`, JSON.stringify(requestBody, null, 2));
+    console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
     
     const response = await fetch('https://ws.cbonds.info/services/json/get_flow_new/', {
       method: 'POST',
@@ -556,32 +556,32 @@ app.get('/api/cbonds/get_flow_new', async (req, res) => {
       body: JSON.stringify(requestBody)
     });
 
-    console.log(`📥 CBonds API响应状态: ${response.status}`);
+    console.log(`📥 Financial Data API响应状态: ${response.status}`);
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ CBonds API错误响应: ${errorText}`);
-      throw new Error(`CBonds API responded with status: ${response.status} - ${errorText}`);
+      console.error(`❌ Financial Data API错误响应: ${errorText}`);
+      throw new Error(`Financial Data API responded with status: ${response.status} - ${errorText}`);
     }
 
     const responseText = await response.text();
-    console.log(`📥 CBonds API原始响应长度: ${responseText.length} 字符`);
+    console.log(`📥 Financial Data API原始响应长度: ${responseText.length} 字符`);
     
     let data;
     try {
       data = JSON.parse(responseText);
-      console.log(`✅ 成功解析CBonds API响应`);
+      console.log(`✅ 成功解析Financial Data API响应`);
     } catch (parseError) {
       console.error(`❌ JSON解析错误: ${parseError.message}`);
-      throw new Error(`Invalid JSON response from CBonds API: ${responseText}`);
+      throw new Error(`Invalid JSON response from Financial Data API: ${responseText}`);
     }
 
     res.json(data);
     
   } catch (err) {
-    console.error(`❌ CBonds API调用错误:`, err);
+    console.error(`❌ Financial Data API调用错误:`, err);
     res.status(500).json({ 
-      error: 'Cbonds API error', 
+      error: 'Financial Data API error', 
       detail: err.message,
       endpoint: 'get_flow_new',
       timestamp: new Date().toISOString()
@@ -589,10 +589,10 @@ app.get('/api/cbonds/get_flow_new', async (req, res) => {
   }
 });
 
-// CBonds API - 获取债券期权数据
-app.get('/api/cbonds/get_offert', async (req, res) => {
+// Financial Data API - 获取债券期权数据
+app.get('/api/financial-data/get_offert', async (req, res) => {
   try {
-    console.log(`🔍 获取CBonds债券期权数据...`);
+    console.log(`🔍 获取Financial Data债券期权数据...`);
     
     // 支持ISIN查询参数
     const filters = req.body?.filters || [];
@@ -601,12 +601,12 @@ app.get('/api/cbonds/get_offert', async (req, res) => {
     }
     
     const requestBody = {
-      auth: { login: CBONDS_LOGIN, password: CBONDS_PASSWORD },
+      auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: filters,
       quantity: req.body?.quantity || { limit: 100, offset: 0 }
     };
     
-    console.log(`📤 发送请求到CBonds API:`, JSON.stringify(requestBody, null, 2));
+    console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
     
     const response = await fetch('https://ws.cbonds.info/services/json/get_offert/', {
       method: 'POST',
@@ -618,32 +618,32 @@ app.get('/api/cbonds/get_offert', async (req, res) => {
       body: JSON.stringify(requestBody)
     });
 
-    console.log(`📥 CBonds API响应状态: ${response.status}`);
+    console.log(`📥 Financial Data API响应状态: ${response.status}`);
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ CBonds API错误响应: ${errorText}`);
-      throw new Error(`CBonds API responded with status: ${response.status} - ${errorText}`);
+      console.error(`❌ Financial Data API错误响应: ${errorText}`);
+      throw new Error(`Financial Data API responded with status: ${response.status} - ${errorText}`);
     }
 
     const responseText = await response.text();
-    console.log(`📥 CBonds API原始响应长度: ${responseText.length} 字符`);
+    console.log(`📥 Financial Data API原始响应长度: ${responseText.length} 字符`);
     
     let data;
     try {
       data = JSON.parse(responseText);
-      console.log(`✅ 成功解析CBonds API响应`);
+      console.log(`✅ 成功解析Financial Data API响应`);
     } catch (parseError) {
       console.error(`❌ JSON解析错误: ${parseError.message}`);
-      throw new Error(`Invalid JSON response from CBonds API: ${responseText}`);
+      throw new Error(`Invalid JSON response from Financial Data API: ${responseText}`);
     }
 
     res.json(data);
     
   } catch (err) {
-    console.error(`❌ CBonds API调用错误:`, err);
+    console.error(`❌ Financial Data API调用错误:`, err);
     res.status(500).json({ 
-      error: 'Cbonds API error', 
+      error: 'Financial Data API error', 
       detail: err.message,
       endpoint: 'get_offert',
       timestamp: new Date().toISOString()
@@ -651,10 +651,10 @@ app.get('/api/cbonds/get_offert', async (req, res) => {
   }
 });
 
-// CBonds API - 获取债券交易报价数据
-app.get('/api/cbonds/get_tradings_new', async (req, res) => {
+// Financial Data API - 获取债券交易报价数据
+app.get('/api/financial-data/get_tradings_new', async (req, res) => {
   try {
-    console.log(`🔍 获取CBonds债券交易报价数据...`);
+    console.log(`🔍 获取Financial Data债券交易报价数据...`);
     
     // 支持ISIN查询参数
     const filters = req.body?.filters || [];
@@ -663,7 +663,7 @@ app.get('/api/cbonds/get_tradings_new', async (req, res) => {
     }
     
     const requestBody = {
-      auth: { login: CBONDS_LOGIN, password: CBONDS_PASSWORD },
+      auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: filters,
       quantity: req.body?.quantity || { limit: 100, offset: 0 }
     };
@@ -677,7 +677,7 @@ app.get('/api/cbonds/get_tradings_new', async (req, res) => {
       requestBody.sorting = req.body.sorting;
     }
     
-    console.log(`📤 发送请求到CBonds API:`, JSON.stringify(requestBody, null, 2));
+    console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
     
     const response = await fetch('https://ws.cbonds.info/services/json/get_tradings_new/', {
       method: 'POST',
@@ -689,32 +689,32 @@ app.get('/api/cbonds/get_tradings_new', async (req, res) => {
       body: JSON.stringify(requestBody)
     });
 
-    console.log(`📥 CBonds API响应状态: ${response.status}`);
+    console.log(`📥 Financial Data API响应状态: ${response.status}`);
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ CBonds API错误响应: ${errorText}`);
-      throw new Error(`CBonds API responded with status: ${response.status} - ${errorText}`);
+      console.error(`❌ Financial Data API错误响应: ${errorText}`);
+      throw new Error(`Financial Data API responded with status: ${response.status} - ${errorText}`);
     }
 
     const responseText = await response.text();
-    console.log(`📥 CBonds API原始响应长度: ${responseText.length} 字符`);
+    console.log(`📥 Financial Data API原始响应长度: ${responseText.length} 字符`);
     
     let data;
     try {
       data = JSON.parse(responseText);
-      console.log(`✅ 成功解析CBonds API响应`);
+      console.log(`✅ 成功解析Financial Data API响应`);
     } catch (parseError) {
       console.error(`❌ JSON解析错误: ${parseError.message}`);
-      throw new Error(`Invalid JSON response from CBonds API: ${responseText}`);
+      throw new Error(`Invalid JSON response from Financial Data API: ${responseText}`);
     }
 
     res.json(data);
     
   } catch (err) {
-    console.error(`❌ CBonds API调用错误:`, err);
+    console.error(`❌ Financial Data API调用错误:`, err);
     res.status(500).json({ 
-      error: 'Cbonds API error', 
+      error: 'Financial Data API error', 
       detail: err.message,
       endpoint: 'get_tradings_new',
       timestamp: new Date().toISOString()
@@ -722,13 +722,13 @@ app.get('/api/cbonds/get_tradings_new', async (req, res) => {
   }
 });
 
-// CBonds API - 获取债券交易报价数据 (POST版本，支持复杂查询)
-app.post('/api/cbonds/get_tradings_new', async (req, res) => {
+// Financial Data API - 获取债券交易报价数据 (POST版本，支持复杂查询)
+app.post('/api/financial-data/get_tradings_new', async (req, res) => {
   try {
-    console.log(`🔍 获取CBonds债券交易报价数据 (POST)...`);
+    console.log(`🔍 获取Financial Data债券交易报价数据 (POST)...`);
     
     const requestBody = {
-      auth: { login: CBONDS_LOGIN, password: CBONDS_PASSWORD },
+      auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: req.body.filters || [],
       quantity: req.body.quantity || { limit: 100, offset: 0 }
     };
@@ -738,7 +738,7 @@ app.post('/api/cbonds/get_tradings_new', async (req, res) => {
       requestBody.sorting = req.body.sorting;
     }
     
-    console.log(`📤 发送请求到CBonds API:`, JSON.stringify(requestBody, null, 2));
+    console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
     
     const response = await fetch('https://ws.cbonds.info/services/json/get_tradings_new/', {
       method: 'POST',
@@ -750,32 +750,32 @@ app.post('/api/cbonds/get_tradings_new', async (req, res) => {
       body: JSON.stringify(requestBody)
     });
 
-    console.log(`📥 CBonds API响应状态: ${response.status}`);
+    console.log(`📥 Financial Data API响应状态: ${response.status}`);
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ CBonds API错误响应: ${errorText}`);
-      throw new Error(`CBonds API responded with status: ${response.status} - ${errorText}`);
+      console.error(`❌ Financial Data API错误响应: ${errorText}`);
+      throw new Error(`Financial Data API responded with status: ${response.status} - ${errorText}`);
     }
 
     const responseText = await response.text();
-    console.log(`📥 CBonds API原始响应长度: ${responseText.length} 字符`);
+    console.log(`📥 Financial Data API原始响应长度: ${responseText.length} 字符`);
     
     let data;
     try {
       data = JSON.parse(responseText);
-      console.log(`✅ 成功解析CBonds API响应`);
+      console.log(`✅ 成功解析Financial Data API响应`);
     } catch (parseError) {
       console.error(`❌ JSON解析错误: ${parseError.message}`);
-      throw new Error(`Invalid JSON response from CBonds API: ${responseText}`);
+      throw new Error(`Invalid JSON response from Financial Data API: ${responseText}`);
     }
 
     res.json(data);
     
   } catch (err) {
-    console.error(`❌ CBonds API调用错误:`, err);
+    console.error(`❌ Financial Data API调用错误:`, err);
     res.status(500).json({ 
-      error: 'Cbonds API error', 
+      error: 'Financial Data API error', 
       detail: err.message,
       endpoint: 'get_tradings_new',
       timestamp: new Date().toISOString()
@@ -795,17 +795,17 @@ app.get('/api/company/profile', async (req, res) => {
 
     console.log(`🔍 獲取公司完整資訊: ${isin}, 語言: ${lang}`);
 
-    // 1. 從Cbonds獲取基本資訊
-    const cbondsData = await fetch(`http://localhost:${PORT}/api/get_emissions?isin=${isin}&lang=${lang}`, {
+    // 1. 從Financial Data獲取基本資訊
+    const financialData = await fetch(`http://localhost:${PORT}/api/get_emissions?isin=${isin}&lang=${lang}`, {
       headers: { 'Authorization': req.headers.authorization }
     });
     
-    if (!cbondsData.ok) {
-      throw new Error('Failed to fetch Cbonds data');
+    if (!financialData.ok) {
+      throw new Error('Failed to fetch Financial Data data');
     }
     
-    const cbondsResult = await cbondsData.json();
-    const companyData = cbondsResult.items?.[0];
+    const financialResult = await financialData.json();
+    const companyData = financialResult.items?.[0];
 
     if (!companyData) {
       return res.status(404).json({ error: 'Company not found' });
@@ -858,7 +858,7 @@ app.get('/api/company/profile', async (req, res) => {
       
       // 資料來源
       data_sources: {
-        cbonds: true,
+        financial_data: true,
         additional_apis: false
       }
     };

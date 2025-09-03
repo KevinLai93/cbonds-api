@@ -61,7 +61,7 @@ async function getBondData(isin, token) {
 
 // 3. 获取债券交易报价
 async function getBondTrading(isin, token) {
-  const response = await fetch(`${API_BASE_URL}/api/cbonds/get_tradings_new?isin=${isin}`, {
+  const response = await fetch(`${API_BASE_URL}/api/financial-data/get_tradings_new?isin=${isin}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -74,7 +74,7 @@ async function getBondTrading(isin, token) {
 
 // 4. 获取债券付息计划
 async function getBondFlow(isin, token) {
-  const response = await fetch(`${API_BASE_URL}/api/cbonds/get_flow_new?isin=${isin}`, {
+  const response = await fetch(`${API_BASE_URL}/api/financial-data/get_flow_new?isin=${isin}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -146,11 +146,11 @@ Authorization: Bearer {JWT_TOKEN}
 | `/api/login` | POST | 用户登录 | ❌ |
 | `/api/profile` | GET | 用户信息 | ❌ |
 | `/api/get_emissions?isin={ISIN}` | GET | 债券发行数据 | ✅ |
-| `/api/cbonds/get_emission_default?isin={ISIN}` | GET | 债券违约数据 | ✅ |
-| `/api/cbonds/get_tradings_new?isin={ISIN}` | GET | 债券交易报价 | ✅ |
-| `/api/cbonds/get_flow_new?isin={ISIN}` | GET | 债券付息计划 | ✅ |
-| `/api/cbonds/get_offert?isin={ISIN}` | GET | 债券期权数据 | ✅ |
-| `/api/cbonds/get_emission_guarantors?isin={ISIN}` | GET | 债券担保人数据 | ✅ |
+| `/api/financial-data/get_emission_default?isin={ISIN}` | GET | 债券违约数据 | ✅ |
+| `/api/financial-data/get_tradings_new?isin={ISIN}` | GET | 债券交易报价 | ✅ |
+| `/api/financial-data/get_flow_new?isin={ISIN}` | GET | 债券付息计划 | ✅ |
+| `/api/financial-data/get_offert?isin={ISIN}` | GET | 债券期权数据 | ✅ |
+| `/api/financial-data/get_emission_guarantors?isin={ISIN}` | GET | 债券担保人数据 | ✅ |
 
 ## 🚀 快速开始
 

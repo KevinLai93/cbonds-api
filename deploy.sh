@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# AWS Deployment Script for Cbonds API
+# AWS Deployment Script for Financial Data API
 # This script helps deploy your API to AWS Lambda + API Gateway
 
 set -e
 
-echo "🚀 AWS Deployment Script for Cbonds API"
+echo "🚀 AWS Deployment Script for Financial Data API"
 echo "========================================"
 
 # Check prerequisites
@@ -35,17 +35,17 @@ echo "✅ AWS credentials configured for: $(aws sts get-caller-identity --query 
 # Check environment variables
 echo "🔍 Checking environment variables..."
 if [ ! -f .env ]; then
-    echo "❌ .env file not found. Please create it with your Cbonds credentials:"
-    echo "   CBONDS_LOGIN=your_email@domain.com"
-    echo "   CBONDS_PASSWORD=your_password"
+    echo "❌ .env file not found. Please create it with your Financial Data API credentials:"
+    echo "   FINANCIAL_DATA_LOGIN=your_email@domain.com"
+    echo "   FINANCIAL_DATA_PASSWORD=your_password"
     exit 1
 fi
 
 # Load environment variables
 source .env
 
-if [ -z "$CBONDS_LOGIN" ] || [ -z "$CBONDS_PASSWORD" ]; then
-    echo "❌ CBONDS_LOGIN or CBONDS_PASSWORD not set in .env file"
+if [ -z "$FINANCIAL_DATA_LOGIN" ] || [ -z "$FINANCIAL_DATA_PASSWORD" ]; then
+    echo "❌ FINANCIAL_DATA_LOGIN or FINANCIAL_DATA_PASSWORD not set in .env file"
     exit 1
 fi
 
@@ -54,14 +54,14 @@ echo "✅ Environment variables loaded"
 # Set environment variables in AWS Parameter Store
 echo "🔐 Setting environment variables in AWS Parameter Store..."
 aws ssm put-parameter \
-    --name "/cbonds-api/dev/CBONDS_LOGIN" \
-    --value "$CBONDS_LOGIN" \
+    --name "/financial-data-api/dev/FINANCIAL_DATA_LOGIN" \
+    --value "$FINANCIAL_DATA_LOGIN" \
     --type "SecureString" \
     --overwrite
 
 aws ssm put-parameter \
-    --name "/cbonds-api/dev/CBONDS_PASSWORD" \
-    --value "$CBONDS_PASSWORD" \
+    --name "/financial-data-api/dev/FINANCIAL_DATA_PASSWORD" \
+    --value "$FINANCIAL_DATA_PASSWORD" \
     --type "SecureString" \
     --overwrite
 
@@ -70,7 +70,7 @@ echo "✅ Environment variables stored in Parameter Store"
 # Update serverless.yml with Parameter Store references
 echo "📝 Updating serverless.yml..."
 cat > serverless.yml << 'EOF'
-service: cbonds-api
+service: financial-data-api
 
 frameworkVersion: '3'
 
@@ -80,8 +80,8 @@ provider:
   region: ap-northeast-1  # Tokyo region, change as needed
   stage: ${opt:stage, 'dev'}
   environment:
-    CBONDS_LOGIN: ${ssm:/cbonds-api/${self:provider.stage}/CBONDS_LOGIN}
-    CBONDS_PASSWORD: ${ssm:/cbonds-api/${self:provider.stage}/CBONDS_PASSWORD}
+    FINANCIAL_DATA_LOGIN: ${ssm:/financial-data-api/${self:provider.stage}/FINANCIAL_DATA_LOGIN}
+    FINANCIAL_DATA_PASSWORD: ${ssm:/financial-data-api/${self:provider.stage}/FINANCIAL_DATA_PASSWORD}
   iam:
     role:
       statements:
@@ -90,7 +90,7 @@ provider:
             - ssm:GetParameter
             - ssm:GetParameters
           Resource: 
-            - "arn:aws:ssm:${self:provider.region}:${aws:accountId}:parameter/cbonds-api/*"
+            - "arn:aws:ssm:${self:provider.region}:${aws:accountId}:parameter/financial-data-api/*"
         - Effect: Allow
           Action:
             - logs:CreateLogGroup
@@ -138,7 +138,7 @@ echo "📊 To view logs:"
 echo "   serverless logs -f api --stage dev"
 echo ""
 echo "🌐 To update environment variables:"
-echo "   aws ssm put-parameter --name '/cbonds-api/dev/CBONDS_LOGIN' --value 'new_value' --type 'SecureString' --overwrite"
-echo "   aws ssm put-parameter --name '/cbonds-api/dev/CBONDS_PASSWORD' --value 'new_value' --type 'SecureString' --overwrite"
+echo "   aws ssm put-parameter --name '/financial-data-api/dev/FINANCIAL_DATA_LOGIN' --value 'new_value' --type 'SecureString' --overwrite"
+echo "   aws ssm put-parameter --name '/financial-data-api/dev/FINANCIAL_DATA_PASSWORD' --value 'new_value' --type 'SecureString' --overwrite"
 echo "   serverless deploy --stage dev"
 

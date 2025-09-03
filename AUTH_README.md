@@ -119,7 +119,7 @@ Authorization: Bearer <your-jwt-token>
 ```
 
 **响应：**
-返回CBonds API的债券发行数据响应。
+返回Financial Data API的债券发行数据响应。
 
 ## 认证中间件
 

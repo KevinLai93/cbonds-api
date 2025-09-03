@@ -1,6 +1,6 @@
-# Cbonds API
+# Financial Data API
 
-A Node.js Express API for querying bond emissions data from Cbonds.
+A Node.js Express API for querying bond emissions data from financial data providers.
 
 ## Features
 
@@ -30,8 +30,8 @@ npm install
 
 2. Create `.env` file:
 ```bash
-CBONDS_LOGIN=your_email@domain.com
-CBONDS_PASSWORD=your_password
+FINANCIAL_DATA_LOGIN=your_email@domain.com
+FINANCIAL_DATA_PASSWORD=your_password
 ```
 
 3. Generate SSL certificates:
@@ -62,12 +62,12 @@ npm run dev
 - Get Emissions: `http://localhost:3000/api/get_emissions?isin=US037833DY36&lang=zh`
 - Get Emitents: `http://localhost:3000/api/get_emitents?emitent_id=23541&lang=zh`
 
-#### CBonds API端点
-- Get Emission Default: `GET http://localhost:3000/api/cbonds/get_emission_default?isin=US037833DY36`
-- Get Emission Guarantors: `GET http://localhost:3000/api/cbonds/get_emission_guarantors?isin=US037833DY36`
-- Get Flow New: `GET http://localhost:3000/api/cbonds/get_flow_new?isin=US037833DY36`
-- Get Offert: `GET http://localhost:3000/api/cbonds/get_offert?isin=US037833DY36`
-- Get Tradings New: `GET http://localhost:3000/api/cbonds/get_tradings_new?isin=US037833DY36&sort_by=date_desc`
+#### Financial Data API端点
+- Get Emission Default: `GET http://localhost:3000/api/financial-data/get_emission_default?isin=US037833DY36`
+- Get Emission Guarantors: `GET http://localhost:3000/api/financial-data/get_emission_guarantors?isin=US037833DY36`
+- Get Flow New: `GET http://localhost:3000/api/financial-data/get_flow_new?isin=US037833DY36`
+- Get Offert: `GET http://localhost:3000/api/financial-data/get_offert?isin=US037833DY36`
+- Get Tradings New: `GET http://localhost:3000/api/financial-data/get_tradings_new?isin=US037833DY36&sort_by=date_desc`
 
 ## AWS Deployment
 
@@ -94,8 +94,8 @@ npm install
 
 1. Set environment variables in AWS Systems Manager Parameter Store:
 ```bash
-aws ssm put-parameter --name "/cbonds-api/dev/CBONDS_LOGIN" --value "your_email@domain.com" --type "SecureString"
-aws ssm put-parameter --name "/cbonds-api/dev/CBONDS_PASSWORD" --value "your_password" --type "SecureString"
+aws ssm put-parameter --name "/financial-data-api/dev/FINANCIAL_DATA_LOGIN" --value "your_email@domain.com" --type "SecureString"
+aws ssm put-parameter --name "/financial-data-api/dev/FINANCIAL_DATA_PASSWORD" --value "your_password" --type "SecureString"
 ```
 
 2. Update `serverless.yml` with your region and environment variable references.
@@ -155,8 +155,8 @@ npm run deploy:prod
 
 ## Environment Variables
 
-- `CBONDS_LOGIN`: Your Cbonds login email
-- `CBONDS_PASSWORD`: Your Cbonds password
+- `FINANCIAL_DATA_LOGIN`: Your Financial Data API login email
+- `FINANCIAL_DATA_PASSWORD`: Your Financial Data API password
 - `JWT_SECRET`: JWT signing secret (default: development secret)
 - `JWT_EXPIRES_IN`: JWT token expiration time (default: 24h)
 - `NODE_ENV`: Environment (development/production)
@@ -268,7 +268,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Response:**
-Returns Cbonds API response with bond emission data. When `lang=zh`, only the industry field (`emitent_branch_name_eng`) is translated to Chinese.
+Returns Financial Data API response with bond emission data. When `lang=zh`, only the industry field (`emitent_branch_name_eng`) is translated to Chinese.
 
 ### GET /api/get_emitents
 Query issuer information with optional language translation.
@@ -292,8 +292,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 **Response:**
 Returns issuer information. When `lang=zh`, the industry field (`branch_name_eng`) and issuer introduction (`more_eng`) are translated to Chinese.
 
-### GET /api/cbonds/get_issuers
-Get issuers information from CBonds API.
+### GET /api/financial-data/get_issuers
+Get issuers information from Financial Data API.
 
 **Headers:**
 ```
@@ -301,21 +301,10 @@ Authorization: Bearer <your-jwt-token>
 ```
 
 **Response:**
-Returns CBonds API response with issuers data.
+Returns Financial Data API response with issuers data.
 
-### GET /api/cbonds/get_companies
-Get companies information from CBonds API.
-
-**Headers:**
-```
-Authorization: Bearer <your-jwt-token>
-```
-
-**Response:**
-Returns CBonds API response with companies data.
-
-### GET /api/cbonds/get_last_quotes
-Get last quotes from CBonds API.
+### GET /api/financial-data/get_companies
+Get companies information from Financial Data API.
 
 **Headers:**
 ```
@@ -323,7 +312,18 @@ Authorization: Bearer <your-jwt-token>
 ```
 
 **Response:**
-Returns CBonds API response with last quotes data.
+Returns Financial Data API response with companies data.
+
+### GET /api/financial-data/get_last_quotes
+Get last quotes from Financial Data API.
+
+**Headers:**
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+**Response:**
+Returns Financial Data API response with last quotes data.
 
 ## CORS
 
@@ -528,14 +528,14 @@ The API now supports time-based sorting for bond trading data to get the latest 
 ```bash
 # Get most recent trading data
 curl -H "Authorization: Bearer $TOKEN" \
-"http://localhost:3000/api/cbonds/get_tradings_new?isin=US037833DY36&sort_by=date_desc"
+"http://localhost:3000/api/financial-data/get_tradings_new?isin=US037833DY36&sort_by=date_desc"
 ```
 
 **Get Historical Prices:**
 ```bash
 # Get historical trading data
 curl -H "Authorization: Bearer $TOKEN" \
-"http://localhost:3000/api/cbonds/get_tradings_new?isin=US037833DY36&sort_by=date_asc"
+"http://localhost:3000/api/financial-data/get_tradings_new?isin=US037833DY36&sort_by=date_asc"
 ```
 
 **Frontend Integration:**
@@ -571,5 +571,5 @@ For issues and questions:
 3. Test endpoints locally first
 4. Check AWS CloudWatch logs for Lambda issues
 5. For translation issues, check Free Translate API availability
-6. For price data issues, verify Cbonds API connectivity and credentials
+6. For price data issues, verify Financial Data API connectivity and credentials
 

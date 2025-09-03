@@ -1,5 +1,5 @@
 {
-  "name": "cbonds-api",
+  "name": "financial-data-api",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -16,7 +16,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "A Node.js Express API for querying bond emissions data from financial data providers",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",

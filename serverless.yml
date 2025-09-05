@@ -18,7 +18,25 @@ provider:
             - logs:CreateLogGroup
             - logs:CreateLogStream
             - logs:PutLogEvents
+            - ssm:GetParameter
+            - ssm:GetParameters
           Resource: "*"
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"  # 生產環境建議限制特定域名
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
 
 functions:
   api:
@@ -29,6 +47,8 @@ functions:
           method: '*'
     timeout: 30
     memorySize: 512
+    environment:
+      NODE_ENV: ${self:provider.stage}
 
 plugins:
   - serverless-offline

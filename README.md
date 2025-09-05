@@ -92,22 +92,43 @@ npm install
 
 #### Deploy
 
+**方法一：使用部署腳本（推薦）**
+```bash
+# 設定環境變數
+export FINANCIAL_DATA_LOGIN=your_email@domain.com
+export FINANCIAL_DATA_PASSWORD=your_password
+
+# 執行部署腳本
+./deploy.sh
+```
+
+**方法二：手動部署**
 1. Set environment variables in AWS Systems Manager Parameter Store:
 ```bash
 aws ssm put-parameter --name "/financial-data-api/dev/FINANCIAL_DATA_LOGIN" --value "your_email@domain.com" --type "SecureString"
 aws ssm put-parameter --name "/financial-data-api/dev/FINANCIAL_DATA_PASSWORD" --value "your_password" --type "SecureString"
 ```
 
-2. Update `serverless.yml` with your region and environment variable references.
-
-3. Deploy:
+2. Deploy:
 ```bash
 # Deploy to dev
-npm run deploy
+serverless deploy --stage dev
 
 # Deploy to production
-npm run deploy:prod
+serverless deploy --stage prod
 ```
+
+#### HTTPS 支援
+- ✅ AWS API Gateway 自動提供 HTTPS 端點
+- ✅ SSL/TLS 證書由 AWS 管理
+- ✅ 所有 API 端點都支援 HTTPS
+- ✅ 自動重定向 HTTP 到 HTTPS
+
+#### 生產環境建議
+- 設定自定義域名（使用 AWS Certificate Manager）
+- 限制 CORS 來源到特定域名
+- 啟用 API Gateway 限流和節流
+- 設定 CloudWatch 監控和告警
 
 4. The deployment will output your API Gateway URL.
 

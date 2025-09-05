@@ -67,8 +67,8 @@ aws ssm put-parameter \
 
 echo "✅ Environment variables stored in Parameter Store"
 
-# Update serverless.yml with Parameter Store references
-echo "📝 Updating serverless.yml..."
+# Update serverless.yml with Parameter Store references and HTTPS support
+echo "📝 Updating serverless.yml with HTTPS support..."
 cat > serverless.yml << 'EOF'
 service: financial-data-api
 
@@ -82,6 +82,7 @@ provider:
   environment:
     FINANCIAL_DATA_LOGIN: ${ssm:/financial-data-api/${self:provider.stage}/FINANCIAL_DATA_LOGIN}
     FINANCIAL_DATA_PASSWORD: ${ssm:/financial-data-api/${self:provider.stage}/FINANCIAL_DATA_PASSWORD}
+    NODE_ENV: ${self:provider.stage}
   iam:
     role:
       statements:
@@ -97,6 +98,22 @@ provider:
             - logs:CreateLogStream
             - logs:PutLogEvents
           Resource: "*"
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"  # 生產環境建議限制特定域名
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - X-Amz-Date
+        - X-Api-Key
+        - X-Amz-Security-Token
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
 
 functions:
   api:
@@ -107,6 +124,8 @@ functions:
           method: '*'
     timeout: 30
     memorySize: 512
+    environment:
+      NODE_ENV: ${self:provider.stage}
 
 plugins:
   - serverless-offline
@@ -127,9 +146,22 @@ echo ""
 echo "🎉 Deployment completed!"
 echo ""
 echo "📋 Next steps:"
-echo "1. Your API is now available at the URL shown above"
+echo "1. Your API is now available at the HTTPS URL shown above"
 echo "2. Test the health endpoint: <your-api-url>/api/health"
 echo "3. Test the emissions endpoint: <your-api-url>/api/get_emissions?isin=US037833DY36"
+echo ""
+echo "🔒 HTTPS Support:"
+echo "   ✅ AWS API Gateway automatically provides HTTPS"
+echo "   ✅ SSL/TLS certificates are managed by AWS"
+echo "   ✅ All API endpoints are accessible via HTTPS"
+echo ""
+echo "🌐 Production Recommendations:"
+echo "   1. Set up a custom domain (optional):"
+echo "      - Use AWS Certificate Manager for SSL certificates"
+echo "      - Configure Route 53 for DNS"
+echo "   2. Restrict CORS origins for security"
+echo "   3. Enable API Gateway throttling and rate limiting"
+echo "   4. Set up CloudWatch monitoring and alerts"
 echo ""
 echo "🔧 To remove the deployment:"
 echo "   serverless remove --stage dev"

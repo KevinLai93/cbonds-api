@@ -10,6 +10,7 @@ import { findUserByCredentials } from './users.js';
 import { generateToken, authenticateToken, requireRole } from './auth.js';
 import { globalAuth } from './middleware.js';
 import { translateCompanyData, translateBondData, translateText, translateCompanyDataAsync, translateBondDataAsync } from './translations.js';
+import { getUserUIConfig } from './ui-config.js';
 
 dotenv.config();
 
@@ -70,6 +71,9 @@ app.post('/api/login', async (req, res) => {
     // Generate JWT token
     const token = generateToken(user);
     
+    // Get UI configuration for this user
+    const uiConfig = getUserUIConfig(user.username, user.role);
+    
     // Return user info and token (without password)
     const { password: _, ...userWithoutPassword } = user;
     
@@ -78,7 +82,12 @@ app.post('/api/login', async (req, res) => {
       message: 'Login successful',
       user: userWithoutPassword,
       token,
-      expiresIn: '24h'
+      expiresIn: '24h',
+      accountType: {
+        type: uiConfig.type,
+        displayName: uiConfig.displayName,
+        category: uiConfig.category
+      }
     });
     
   } catch (error) {
@@ -92,12 +101,31 @@ app.post('/api/login', async (req, res) => {
 
 // Protected endpoint example - requires authentication
 app.get('/api/profile', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Profile retrieved successfully',
-    user: req.user
-  });
+  try {
+    // Get UI configuration for this user
+    const uiConfig = getUserUIConfig(req.user.username, req.user.role);
+    
+    res.json({
+      success: true,
+      message: 'Profile retrieved successfully',
+      user: req.user,
+      accountType: {
+        type: uiConfig.type,
+        displayName: uiConfig.displayName,
+        category: uiConfig.category
+      }
+    });
+  } catch (error) {
+    console.error('Profile error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve profile',
+      message: error.message
+    });
+  }
 });
+
+
 
 // Admin-only endpoint example
 app.get('/api/admin/users', requireRole(['admin']), (req, res) => {
@@ -505,13 +533,13 @@ app.get('/api/financial-data/get_flow_new', async (req, res) => {
             'User-Agent': 'curl/8.7.1',
             'Accept': '*/*'
           },
-          body: JSON.stringify({
+      body: JSON.stringify({
             auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
             filters: [{ field: 'isin_code', operator: 'in', value: req.query.isin }],
-            quantity: { limit: 1, offset: 0 }
-          })
-        });
-        
+        quantity: { limit: 1, offset: 0 }
+      })
+    });
+
         if (emissionResponse.ok) {
           const emissionData = await emissionResponse.json();
           if (emissionData.items && emissionData.items.length > 0) {

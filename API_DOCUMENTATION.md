@@ -29,7 +29,12 @@
     "name": "Administrator"
   },
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "expiresIn": "24h"
+  "expiresIn": "24h",
+  "accountType": {
+    "type": "admin",
+    "displayName": "系統管理員",
+    "category": "management"
+  }
 }
 ```
 
@@ -55,26 +60,77 @@ Authorization: Bearer {JWT_TOKEN}
 ```json
 {
   "success": true,
+  "message": "Profile retrieved successfully",
   "user": {
     "id": 1,
     "username": "admin",
     "role": "admin",
     "name": "Administrator"
+  },
+  "accountType": {
+    "type": "admin",
+    "displayName": "系統管理員",
+    "category": "management"
   }
 }
 ```
 
-## 👥 用户角色
+## 👥 用户角色与账号分类
+
+### 账号分类系统
+系统根据用户名前缀自动识别账号类型，返回对应的分类信息：
+
+| 账号类型 | 显示名称 | 分类 | 识别规则 | 说明 |
+|---------|---------|------|---------|------|
+| **admin** | 系統管理員 | management | 用户名以 `admin` 开头 | 管理員權限 |
+| **analyst** | 財務分析師 | analysis | 用户名以 `analyst` 开头 | 分析師權限 |
+| **entrust** | 信託用戶 | investment | 用户名以 `entrust` 开头 | 投資相關權限 |
+| **ubot** | UBot用戶 | automation | 用户名以 `ubot` 开头 | 自動化權限 |
+| **user** | 一般用戶 | basic | 其他用户名 | 基本權限 |
 
 ### 可用账号
-| 用户名 | 密码 | 角色 | 权限 |
-|--------|------|------|------|
-| admin | admin123 | admin | 所有权限 |
-| user1 | user123 | user | 基本权限 |
-| analyst | analyst123 | analyst | 分析权限 |
-| entrust001 | 2tTokhjidE | user | 基本权限 |
-| entrust002 | ebR0REdj3f | user | 基本权限 |
-| entrust003 | vu7UrMEG4v | user | 基本权限 |
+| 用户名 | 密码 | 角色 | 账号类型 | 分类 | 说明 |
+|--------|------|------|---------|------|------|
+| admin | admin123 | admin | admin | management | 系統管理員 |
+| analyst | analyst123 | analyst | analyst | analysis | 財務分析師 |
+| user1 | user123 | user | user | basic | 一般用戶 |
+| entrust001 | 2tTokhjidE | user | entrust | investment | 信託用戶1 |
+| entrust002 | ebR0REdj3f | user | entrust | investment | 信託用戶2 |
+| entrust003 | vu7UrMEG4v | user | entrust | investment | 信託用戶3 |
+| ubot001 | ubot123456 | user | ubot | automation | UBot用戶1 |
+| ubot002 | ubot789012 | user | ubot | automation | UBot用戶2 |
+
+### 前端使用方式
+```javascript
+// 登入後獲取帳號分類
+const loginResult = await fetch('/api/login', {
+  method: 'POST',
+  body: JSON.stringify({ username, password })
+});
+const { accountType } = await loginResult.json();
+
+// 根據分類顯示不同介面
+switch (accountType.category) {
+  case 'management':
+    // 顯示管理介面
+    break;
+  case 'investment':
+    // 顯示投資介面
+    break;
+  case 'automation':
+    // 顯示自動化介面
+    break;
+  case 'analysis':
+    // 顯示分析介面
+    break;
+  default:
+    // 顯示基本介面
+    break;
+}
+
+// 設置CSS主題
+document.body.className = `${accountType.category}-theme`;
+```
 
 ### 角色权限
 - **admin**: 可以访问所有API端点，包括用户管理
@@ -291,6 +347,7 @@ const login = async (username, password) => {
       // 保存token到localStorage
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('accountType', JSON.stringify(data.accountType));
       return data;
     }
   } catch (error) {
@@ -318,6 +375,7 @@ const callProtectedAPI = async (endpoint, options = {}) => {
       // Token过期，重定向到登录页
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('accountType');
       window.location.href = '/login';
       return;
     }
@@ -340,6 +398,7 @@ const getEmissions = async (isin) => {
 const logout = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  localStorage.removeItem('accountType');
   // 重定向到登录页
   window.location.href = '/login';
 };

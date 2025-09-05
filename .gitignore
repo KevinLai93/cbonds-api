@@ -12,7 +12,7 @@ yarn-error.log*
 .env.production.local
 
 # Private user configuration
-src/users.js
+# src/users.js - 已移除，現在包含在版本控制中
 
 # Logs
 logs

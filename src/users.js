@@ -44,6 +44,27 @@ export const users = [
     password: 'vu7UrMEG4v',
     role: 'user',
     name: 'Entrust User 003'
+  },
+  {
+    id: 7,
+    username: 'ubot001',
+    password: 'CgBy4ew0na',
+    role: 'user',
+    name: 'UBot User 001'
+  },
+  {
+    id: 8,
+    username: 'ubot002',
+    password: 'DfxgRK15tL',
+    role: 'user',
+    name: 'UBot User 002'
+  },
+  {
+    id: 9,
+    username: 'ubot003',
+    password: '3eZM5tEU6J',
+    role: 'user',
+    name: 'UBot User 003'
   }
 ];
 

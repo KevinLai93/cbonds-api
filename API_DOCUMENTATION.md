@@ -98,6 +98,7 @@ Authorization: Bearer {JWT_TOKEN}
 | **analyst** | 財務分析師 | analysis | 用戶名以 `analyst` 開頭 | 分析師權限 |
 | **entrust** | 信託用戶 | investment | 用戶名以 `entrust` 開頭 | 投資相關權限 |
 | **ubot** | UBot用戶 | automation | 用戶名以 `ubot` 開頭 | 自動化權限 |
+| **masterlink** | Masterlink用戶 | trading | 用戶名以 `masterlink` 開頭 | 交易相關權限 |
 | **user** | 一般用戶 | basic | 其他用戶名 | 基本權限 |
 
 ### 可用帳號
@@ -109,8 +110,12 @@ Authorization: Bearer {JWT_TOKEN}
 | entrust001 | 2tTokhjidE | user | entrust | investment | 信託用戶1 |
 | entrust002 | ebR0REdj3f | user | entrust | investment | 信託用戶2 |
 | entrust003 | vu7UrMEG4v | user | entrust | investment | 信託用戶3 |
-| ubot001 | ubot123456 | user | ubot | automation | UBot用戶1 |
-| ubot002 | ubot789012 | user | ubot | automation | UBot用戶2 |
+| ubot001 | CgBy4ew0na | user | ubot | automation | UBot用戶1 |
+| ubot002 | DfxgRK15tL | user | ubot | automation | UBot用戶2 |
+| ubot003 | 3eZM5tEU6J | user | ubot | automation | UBot用戶3 |
+| masterlink001 | BHxxjhR2mz | user | masterlink | trading | Masterlink用戶1 |
+| masterlink002 | J4z6xMZEAU | user | masterlink | trading | Masterlink用戶2 |
+| masterlink003 | w4LsrLqGeV | user | masterlink | trading | Masterlink用戶3 |
 
 ## 📊 債券數據 API
 

@@ -631,6 +631,30 @@ http://localhost:3000
 4. API端點是否正確
 5. 請求格式是否符合要求
 
+## ⚠️ 參數驗證
+
+### ISIN 必填驗證
+以下 API 端點需要必填的 `isin` 參數：
+
+- `GET /api/financial-data/get_tradings_new`
+- `GET /api/financial-data/get_offert`
+- `GET /api/financial-data/get_flow_new`
+- `GET /api/financial-data/get_emission_default`
+- `GET /api/financial-data/get_emission_guarantors`
+
+**錯誤響應** (400):
+```json
+{
+  "error": "Missing required parameter",
+  "message": "請填寫ISIN Code"
+}
+```
+
+### 優化設定
+- **單一 ISIN 查詢**: 自動限制回傳筆數以提升效能
+- **批量查詢**: 無 ISIN 參數時保持原設定
+- **智能過濾**: 根據查詢類型動態調整資料量
+
 ## 🔒 安全注意事項
 
 1. **JWT Secret**: 生產環境必須使用強密鑰
@@ -638,3 +662,4 @@ http://localhost:3000
 3. **Token存儲**: 前端應安全存儲token（如httpOnly cookie）
 4. **Token過期**: 實現自動刷新機制
 5. **權限控制**: 根據用戶角色限制API訪問
+6. **參數驗證**: 所有必填參數都會進行驗證

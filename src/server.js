@@ -394,16 +394,27 @@ app.get('/api/financial-data/get_emission_default', async (req, res) => {
     const lang = req.query.lang || 'eng';
     console.log(`🔍 获取Financial Data债券违约数据... 语言: ${lang}`);
     
+    // 檢查ISIN參數是否必填
+    if (!req.query.isin) {
+      return res.status(400).json({ 
+        error: 'Missing required parameter',
+        message: '請填寫ISIN Code' 
+      });
+    }
+    
     // 支持ISIN查询参数
     const filters = req.body?.filters || [];
     if (req.query.isin) {
       filters.push({ field: 'isin_code', operator: 'in', value: req.query.isin });
     }
     
+    // 根據是否有ISIN參數決定limit - 單一ISIN查詢優化
+    const limit = req.query.isin ? 1 : 100; // 單一ISIN只需要1筆，無ISIN時100筆
+    
     const requestBody = {
       auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: filters,
-      quantity: req.body?.quantity || { limit: 100, offset: 0 }
+      quantity: req.body?.quantity || { limit: limit, offset: 0 }
     };
     
     console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
@@ -458,16 +469,27 @@ app.get('/api/financial-data/get_emission_guarantors', async (req, res) => {
     const lang = req.query.lang || 'eng';
     console.log(`🔍 获取Financial Data债券担保人数据... 语言: ${lang}`);
     
+    // 檢查ISIN參數是否必填
+    if (!req.query.isin) {
+      return res.status(400).json({ 
+        error: 'Missing required parameter',
+        message: '請填寫ISIN Code' 
+      });
+    }
+    
     // 支持ISIN查询参数
     const filters = req.body?.filters || [];
     if (req.query.isin) {
       filters.push({ field: 'isin_code', operator: 'in', value: req.query.isin });
     }
     
+    // 根據是否有ISIN參數決定limit - 單一ISIN查詢優化
+    const limit = req.query.isin ? 5 : 100; // 單一ISIN最多5筆，無ISIN時100筆
+    
     const requestBody = {
       auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: filters,
-      quantity: req.body?.quantity || { limit: 100, offset: 0 }
+      quantity: req.body?.quantity || { limit: limit, offset: 0 }
     };
     
     console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
@@ -521,6 +543,14 @@ app.get('/api/financial-data/get_flow_new', async (req, res) => {
   try {
     console.log(`🔍 获取Financial Data债券付息计划...`);
     
+    // 檢查ISIN參數是否必填
+    if (!req.query.isin) {
+      return res.status(400).json({ 
+        error: 'Missing required parameter',
+        message: '請填寫ISIN Code' 
+      });
+    }
+    
     // 支持ISIN查询参数 - get_flow_new需要使用emission_id
     const filters = req.body?.filters || [];
     if (req.query.isin) {
@@ -569,7 +599,7 @@ app.get('/api/financial-data/get_flow_new', async (req, res) => {
     const requestBody = {
       auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: filters,
-      quantity: req.body?.quantity || { limit: 50, offset: 0 }  // 减少默认limit
+      quantity: req.body?.quantity || { limit: 50, offset: 0 }  // 保持原設定，需要全部配息資料
     };
     
     console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
@@ -622,16 +652,27 @@ app.get('/api/financial-data/get_offert', async (req, res) => {
   try {
     console.log(`🔍 获取Financial Data债券期权数据...`);
     
+    // 檢查ISIN參數是否必填
+    if (!req.query.isin) {
+      return res.status(400).json({ 
+        error: 'Missing required parameter',
+        message: '請填寫ISIN Code' 
+      });
+    }
+    
     // 支持ISIN查询参数
     const filters = req.body?.filters || [];
     if (req.query.isin) {
       filters.push({ field: 'isin_code', operator: 'in', value: req.query.isin });
     }
     
+    // 根據是否有ISIN參數決定limit - 單一ISIN查詢優化
+    const limit = req.query.isin ? 5 : 100; // 單一ISIN最多5筆，無ISIN時100筆
+    
     const requestBody = {
       auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: filters,
-      quantity: req.body?.quantity || { limit: 100, offset: 0 }
+      quantity: req.body?.quantity || { limit: limit, offset: 0 }
     };
     
     console.log(`📤 发送请求到Financial Data API:`, JSON.stringify(requestBody, null, 2));
@@ -684,16 +725,27 @@ app.get('/api/financial-data/get_tradings_new', async (req, res) => {
   try {
     console.log(`🔍 获取Financial Data债券交易报价数据...`);
     
+    // 檢查ISIN參數是否必填
+    if (!req.query.isin) {
+      return res.status(400).json({ 
+        error: 'Missing required parameter',
+        message: '請填寫ISIN Code' 
+      });
+    }
+    
     // 支持ISIN查询参数
     const filters = req.body?.filters || [];
     if (req.query.isin) {
       filters.push({ field: 'isin_code', operator: 'in', value: req.query.isin });
     }
     
+    // 根據是否有ISIN參數決定limit - 單一ISIN查詢優化
+    const limit = req.query.isin ? 10 : 100; // 單一ISIN最多10筆，無ISIN時100筆
+    
     const requestBody = {
       auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: filters,
-      quantity: req.body?.quantity || { limit: 100, offset: 0 }
+      quantity: req.body?.quantity || { limit: limit, offset: 0 }
     };
     
     // 支持排序参数 - 默认按日期降序排列以获取最新数据
@@ -755,10 +807,14 @@ app.post('/api/financial-data/get_tradings_new', async (req, res) => {
   try {
     console.log(`🔍 获取Financial Data债券交易报价数据 (POST)...`);
     
+    // 根據是否有ISIN參數決定limit - 單一ISIN查詢優化
+    const hasIsinFilter = req.body.filters && req.body.filters.some(f => f.field === 'isin_code');
+    const limit = hasIsinFilter ? 10 : 100; // 單一ISIN最多10筆，無ISIN時100筆
+    
     const requestBody = {
       auth: { login: FINANCIAL_DATA_LOGIN, password: FINANCIAL_DATA_PASSWORD },
       filters: req.body.filters || [],
-      quantity: req.body.quantity || { limit: 100, offset: 0 }
+      quantity: req.body.quantity || { limit: limit, offset: 0 }
     };
     
     // 支持排序参数

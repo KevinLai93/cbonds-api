@@ -22,6 +22,11 @@ export const ACCOUNT_TYPES = {
     displayName: 'UBot用戶',
     category: 'automation'
   },
+  masterlink: {
+    type: 'masterlink',
+    displayName: 'Masterlink用戶',
+    category: 'trading'
+  },
   user: {
     type: 'user',
     displayName: '一般用戶',
@@ -38,6 +43,7 @@ export const getAccountType = (username) => {
   if (username.startsWith('analyst')) return ACCOUNT_TYPES.analyst;
   if (username.startsWith('entrust')) return ACCOUNT_TYPES.entrust;
   if (username.startsWith('ubot')) return ACCOUNT_TYPES.ubot;
+  if (username.startsWith('masterlink')) return ACCOUNT_TYPES.masterlink;
   
   // 默認為一般用戶
   return ACCOUNT_TYPES.user;

@@ -27,6 +27,11 @@ export const ACCOUNT_TYPES = {
     displayName: 'Masterlink用戶',
     category: 'trading'
   },
+  esun: {
+    type: 'esun',
+    displayName: 'ESun用戶',
+    category: 'banking'
+  },
   user: {
     type: 'user',
     displayName: '一般用戶',
@@ -44,6 +49,7 @@ export const getAccountType = (username) => {
   if (username.startsWith('entrust')) return ACCOUNT_TYPES.entrust;
   if (username.startsWith('ubot')) return ACCOUNT_TYPES.ubot;
   if (username.startsWith('masterlink')) return ACCOUNT_TYPES.masterlink;
+  if (username.startsWith('esun')) return ACCOUNT_TYPES.esun;
   
   // 默認為一般用戶
   return ACCOUNT_TYPES.user;

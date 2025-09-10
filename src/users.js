@@ -86,6 +86,27 @@ export const users = [
     password: 'w4LsrLqGeV',
     role: 'user',
     name: 'Masterlink User 003'
+  },
+  {
+    id: 13,
+    username: 'esun001',
+    password: 'F5VK5uTw4c',
+    role: 'user',
+    name: 'ESun User 001'
+  },
+  {
+    id: 14,
+    username: 'esun002',
+    password: 'pGzjNBc5o0',
+    role: 'user',
+    name: 'ESun User 002'
+  },
+  {
+    id: 15,
+    username: 'esun003',
+    password: '2pz7FWf62G',
+    role: 'user',
+    name: 'ESun User 003'
   }
 ];
 
